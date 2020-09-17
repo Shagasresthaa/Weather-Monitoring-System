@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Weather Monitor</string>
+    <string name="em">Email</string>
+    <string name="pass">Password</string>
+    <string name="cpass">Confirm Password</string>
+    <string name="login">Login</string>
+    <string name="reg">Register</string>
+    <string name="reset">Reset Password</string>
+    <string name="fpass">Forgot Password</string>
+    <string name="fname">First Name</string>
+    <string name="lname">Last Name</string>
+    <string name="res_txt">Please enter your registered email</string>
 </resources>
