@@ -14,3 +14,20 @@ This is a simple weather monitoring project for monitoring temperature, preasure
 2. Adafruit SSD1306
 3. Adafruit ESP8266
 4. AdaFruit BMP085
+5. Simple DHT11
+6. Software Serial
+7. Wire.h
+
+## Components Used
+
+1. Arduino Nano V3
+2. Arduino Uno R3 (For receiving data from nodes)
+3. Raspbery Pi 4 Model B (4GB) (Any raspbery pi can be used used 4 gb version in view of other personal uses)
+4. 0.91 inch oled display (Used SSD1306 driver)
+5. MicroSD Card Module (For backup data logging and logging node error events)
+6. BMP180 sensor (Uses Adafruit BMP085 library)
+7. DHT11 sensor (Uses Simple DHT Library)
+8. 3 resistors (1k,2/2.2k,10k for ESP8266)
+9. A 3S Lipo Battery
+
+## More to be added as project progresses
