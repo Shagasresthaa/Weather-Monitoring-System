@@ -22,7 +22,7 @@ This is a simple weather monitoring project for monitoring temperature, preasure
 
 1. Arduino Nano V3
 2. Arduino Uno R3 (For receiving data from nodes)
-3. Raspbery Pi 4 Model B (4GB) (Any raspbery pi can be used used 4 gb version in view of other personal uses)
+3. Raspbery Pi 4 Model B (4GB) (Any raspbery pi can be used. I used 4 gb version in view of other personal uses)
 4. 0.91 inch oled display (Used SSD1306 driver)
 5. MicroSD Card Module (For backup data logging and logging node error events)
 6. BMP180 sensor (Uses Adafruit BMP085 library)
