@@ -1,44 +1,57 @@
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
-
 #include <SPI.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 32 // OLED display height, in pixels
-
-//DHT11 config
+#include <SD.h>
 #include <SimpleDHT.h>
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiWire.h"
+
 #define pinDHT11 8
+#define I2C_ADDRESS 0x3C
+#define RST_PIN -1
+
 SimpleDHT11 dht11(pinDHT11);
-
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
 Adafruit_BMP085 bmp;
+SSD1306AsciiWire oled;
 
 void setup() {
   Serial.begin(9600);
+
+  //All init code in this block
+
+  //BMP180 INIT
   if (!bmp.begin()) {
   Serial.println("Could not find a valid BMP085 sensor, check wiring!");
   while (1) {}
   }
+  
+  //OLED INIT
+  Wire.begin();
+  Wire.setClock(400000L);
+  #if RST_PIN >= 0
+  oled.begin(&Adafruit128x32, I2C_ADDRESS, RST_PIN);
+  #else // RST_PIN >= 0
+  oled.begin(&Adafruit128x32, I2C_ADDRESS);
+  #endif // RST_PIN >= 0
 
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
-  }
+ //SD Card init
+ Serial.print("Initializing SD card...");
+
+ // See if the card is present and can be initialized:
+ if (!SD.begin(10)) {
+   Serial.println("Card failed, or not present");
+   // don't do anything more:
+   while (1);
+ }
+  Serial.println("card initialized.");
+  
 }
 
 void loop() {
 
-  byte temperature = 0;
   byte humidity = 0;
   int err = SimpleDHTErrSuccess;
-  if ((err = dht11.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+  if ((err = dht11.read(NULL, &humidity, NULL)) != SimpleDHTErrSuccess) {
     Serial.print("Read DHT11 failed, err="); Serial.println(err);delay(1000);
     return;
   }
@@ -48,43 +61,34 @@ void loop() {
   pres = bmp.readPressure()/1000;
   alti = bmp.readAltitude(101500);
   humd = float(humidity);
-  
-  display.clearDisplay();
-  display.setTextSize(1);      // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE); // Draw white text
-  display.setCursor(0, 0);     // Start at top-left corner
-  display.print("Temp = ");
-  display.print(temp);
-  display.println(" C");
-  display.print("Pres = ");
-  display.print(pres);
-  display.println(" KPa");
-  display.print("Alti = ");
-  display.print(alti);
-  display.println(" meters");
-  display.print("Humd = ");
-  display.print(humd);
-  display.println(" g/m-3");
-  display.display();
-  delay(2000);
 
-    
-  Serial.print("Temperature = ");
-  Serial.print(temp);
-  Serial.println(" *C");
+  String fin = String(temp)+","+String(pres)+","+String(alti)+","+String(humd)+"\n";
+  Serial.println(fin);
 
-  Serial.print("Pressure = ");
-  Serial.print(pres);
-  Serial.println(" KPa");
+  //OLED starts
+  oled.setFont(Adafruit5x7);
+  uint32_t m = micros();
+  oled.clear();
+  oled.print("Temp:");
+  oled.print(temp);
+  oled.println(" 'C");
+  oled.print("Pres:");
+  oled.print(pres);
+  oled.println(" KPa");
+  oled.print("Alti:");
+  oled.print(alti);
+  oled.println(" mtrs");
+  oled.print("Humd:");
+  oled.print(humd);
+  oled.println(" g/m-3");
+//OLED ends
 
-  Serial.print("Real altitude = ");
-  Serial.print(alti);
-  Serial.println(" meters");
-
-  Serial.print("Humidity = ");
-  Serial.println(humd);
-  Serial.println(" meters");
-    
-  Serial.println();
-  delay(500);
+//SD Card
+  File DataFile = SD.open("datalog.txt", FILE_WRITE);
+  if(DataFile){
+    DataFile.println(fin);
+    DataFile.close();
+  }
+//SD Card Code ends
+  delay(1000);
 }
