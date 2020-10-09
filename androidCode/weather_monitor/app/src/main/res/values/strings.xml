@@ -10,4 +10,6 @@
     <string name="fname">First Name</string>
     <string name="lname">Last Name</string>
     <string name="res_txt">Please enter your registered email</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>
