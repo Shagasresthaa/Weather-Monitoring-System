@@ -12,7 +12,7 @@ The bootloader burner to be used for this is also included in project including 
 Arduino bootloader will be used for this ATMEGA2560.
 
 # This is project is work in progress
-All the work is licensed under MIT License which can be found in the project
+All the work is licensed under GNU General Public License V3 which can be found in the project
 
 This is a simple weather monitoring project for monitoring temperature, preasure and humidity using arduino nano nodes and a raspbery pi to upload the data to a custom REST API from which data can be retreived to a mobile application for remote monitoring
 
