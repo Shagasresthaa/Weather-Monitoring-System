@@ -9,8 +9,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/weather.db'
 db = SQLAlchemy(app)
 
 class NodeListAndStatus(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(30), nullable = False)
+    id = db.Column('id',db.Integer, primary_key=True)
+    status = db.Column('status',db.String(30), nullable = False)
 
     def __repr__(self):
         return f"wstat(id={id},status={status})"
