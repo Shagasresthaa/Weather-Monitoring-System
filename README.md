@@ -1,12 +1,20 @@
 # Weather-Monitoring-System
-A simple weather monitoring system using arduino, raspberry pi and an online database hosting platform
+A simple weather monitoring system using arduino, raspberry pi,Mobile application and a Python Flask based REST API
 
 Mobile Login Authentication system uses Firebase.
+
+Working on an SMD version of the node. Components for this will be marked with "*".
+
+ATMEGA2560 16 AU will be used for this version due to more SRAM and program memory bypassing the memory restrictions due to an Arduino Nano running ATMEGA328P AU.
+
+The bootloader burner to be used for this is also included in project including schematics, gerber files.
+
+Arduino bootloader will be used for this ATMEGA2560.
 
 # This is project is work in progress
 All the work is licensed under MIT License which can be found in the project
 
-This is a simple weather monitoring project for monitoring temperature, preasure and humidity using arduino nano nodes and a raspbery pi to upload the data to a online database later retreived to a mobile application for remote monitoring
+This is a simple weather monitoring project for monitoring temperature, preasure and humidity using arduino nano nodes and a raspbery pi to upload the data to a custom REST API from which data can be retreived to a mobile application for remote monitoring
 
 ## Arduino Libraries Used
 
@@ -28,6 +36,17 @@ This is a simple weather monitoring project for monitoring temperature, preasure
 6. BMP180 sensor (Uses Adafruit BMP085 library)
 7. DHT11 sensor (Uses Simple DHT Library)
 8. 3 resistors (1k,2/2.2k,10k for ESP8266)
-9. A 3S Lipo Battery
+9. A 3S Lipo Battery (Not finalized as of yet)
+10. ATMEGA 2560 16 AU *
+11. 16MHz Crystal Oscilator *
+12. Blue 0805 package LED x2 *
+13. 22pf 0603 package capacitor x2 *
+14. 1K resistors 0603 package x2 *
+15. AMS1117 5V SMD package *
+16. 100nf(0.1uf) 0402 package capacitor x2 *
+17. 10uf 0805 package capacitor x2 *
+18. DHT22 sensor *
+
+Components marked with * are to be used in the SMD Edition of the monitoring node.
 
 ## More to be added as project progresses
