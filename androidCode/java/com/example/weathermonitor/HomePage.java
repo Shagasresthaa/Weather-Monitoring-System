@@ -19,6 +19,10 @@ The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
 */
 
+/*************************
+*  @Title  Home Page Code
+*  @author Shaga Sresthaa
+**************************/
 package com.example.weathermonitor;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;

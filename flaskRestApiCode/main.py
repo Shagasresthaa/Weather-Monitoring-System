@@ -19,7 +19,10 @@ The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
 '''
 
-#Author: Shaga Sresthaa
+#############################################
+#   @Title  Weather Data Management API Code
+#   @author Shaga Sresthaa
+#############################################
 
 from flask import Flask
 from flask_restful import Api,Resource
@@ -36,7 +39,7 @@ class NodeListAndStatus(db.Model):
     status = db.Column('status',db.String(30), nullable = False)
 
     def __repr__(self):
-        return f"wstat(id={id},stat={status})"
+        return f"wstat(id={id},status={status})"
 
 db.create_all()
 

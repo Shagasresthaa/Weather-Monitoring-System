@@ -19,6 +19,11 @@ The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
 */
 
+/***************************
+*  @Title  Weather Node Code
+*  @author Shaga Sresthaa
+***************************/
+
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
 #include <SPI.h>

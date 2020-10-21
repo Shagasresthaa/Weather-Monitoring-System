@@ -19,4 +19,12 @@ The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
 '''
 
+#############################################
+#   @Title  Data Upload Code For Raspbery Pi
+#   @author Shaga Sresthaa
+#############################################
+
+import requests
+import json
+
 print("Still setting up code to be uploaded soon")

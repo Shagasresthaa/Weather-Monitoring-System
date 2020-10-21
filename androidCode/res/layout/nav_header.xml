@@ -19,6 +19,11 @@ The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
 -->
 
+<!--
+    @Title  Navigation Header UI Code
+    @author Shaga Sresthaa
+-->
+
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
