@@ -36,7 +36,7 @@ class NodeListAndStatus(db.Model):
     status = db.Column('status',db.String(30), nullable = False)
 
     def __repr__(self):
-        return f"wstat(id={id},status={status})"
+        return f"wstat(id={id},stat={status})"
 
 db.create_all()
 
