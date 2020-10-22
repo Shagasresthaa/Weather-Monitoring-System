@@ -46,6 +46,7 @@ This is a simple weather monitoring project for monitoring temperature, preasure
 16. 100nf(0.1uf) 0402 package capacitor x2 *
 17. 10uf 0805 package capacitor x2 *
 18. DHT22 sensor *
+19. Micro SD card module *
 
 Components marked with * are to be used in the SMD Edition of the monitoring node.
 
