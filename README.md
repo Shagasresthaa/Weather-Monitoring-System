@@ -24,7 +24,7 @@ Will be modifying list to accommodate all new hardware changes
 
 Going to add a fresh list of components used in order to accommodate all new changes in hardware 
 
-Components marked with * are to be used in the SMD Edition of the monitoring node.
+For temporary basis BOM files are now present under PCB fabrication files section which can be used for reference
 
 The Weather Node V4 and its SMD version will be used for the project
 
