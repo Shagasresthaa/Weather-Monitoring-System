@@ -5,8 +5,6 @@ Mobile Login Authentication system uses Firebase.
 
 Working on an SMD version of the node. Components for this will be marked with "*".
 
-ATMEGA2560 16 AU will be used for this version due to more SRAM and program memory bypassing the memory restrictions due to an Arduino Nano running ATMEGA328P AU.
-
 The bootloader burner to be used for this is also included in project including schematics, gerber files.
 
 Arduino bootloader will be used for this ATMEGA2560.
