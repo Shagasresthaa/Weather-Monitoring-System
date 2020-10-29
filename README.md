@@ -28,4 +28,4 @@ The Weather Node V4 and its SMD version will be used for the project
 
 ## If anyone finds any issue or anything that can be done better in schematic or PCB design or anything else in this project do raise an issue
 
-## More to be added as project progresses
+## Project Status: Work In Progress
