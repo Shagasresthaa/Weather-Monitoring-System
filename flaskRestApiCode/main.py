@@ -30,27 +30,68 @@ source code root directory as COPYING.txt.
 from flask import Flask
 from flask_restful import Api,Resource
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects import postgresql
+import json
 
 app = Flask(__name__)
 api = Api(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/weather.db'
+MODE = True
+
+app.config['SQLALCHEMY_DATABASE_URI'] = '*******************************************'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-class NodeListAndStatus(db.Model):
-    id = db.Column('id',db.Integer, primary_key=True)
-    status = db.Column('status',db.String(30), nullable = False)
+class Stats(db.Model):
+    __tablename__ = 'stats'
+    id = db.Column(db.Integer,primary_key=True)
+    status = db.Column(db.String(20))
 
-    def __repr__(self):
-        return f"wstat(id={id},status={status})"
+    def __init__(self,id,status):
+        self.id = id
+        self.status = status
 
-db.create_all()
+class nodeList(db.Model):
+    __tablename__ = 'nodelist'
+    id = db.Column(db.Integer,primary_key=True)
+    def __init__(self,id):
+        self.id = id
 
-class HelloWorld(Resource):
+class WeatherNodeData(db.Model):
+    __tablename__ = "weathernodedata"
+    id = db.Column(db.Integer,primary_key=True)
+    dtime = db.Column(db.DateTime)
+    temp = db.Column(db.Float)
+    pres = db.Column(db.Float)
+    humd = db.Column(db.Float)
+    alti = db.Column(db.Float)
+
+    def __init__(self,id,dtime,temp,pres,humd,alti):
+        self.id = id
+        self.dtime = dtime
+        self.temp = temp
+        self.pres = pres
+        self.humd = humd
+        self.alti = alti
+
+
+#db.create_all()
+
+
+class postStatus(Resource):
+    def get(self,id,status):
+        data = Stats(id,status)
+        db.session.add(data)
+        db.session.commit()
+        return{"dev_id":id,"dev_status":status,"post_Status":"Successful"}
+
+class getStatus(Resource):
     def get(self):
-        return {"data":"Hello World"}
+        data = db.session.query(Stats.id,Stats.status).all()
+        return {"status_code":"200","device_statuses":data}
 
-api.add_resource(HelloWorld,"/helloworld")
+api.add_resource(getStatus,"/getStatus")
+api.add_resource(postStatus,"/postStatus/<int:id>/<string:status>")
 
 if __name__ == '__main__':
-    app.run(debug=True)    
+    app.run(debug=MODE)    
