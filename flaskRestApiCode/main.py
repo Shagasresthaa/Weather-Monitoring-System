@@ -30,13 +30,14 @@ source code root directory as COPYING.txt.
 from flask import Flask
 from flask_restful import Api,Resource
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects import postgresql
 import json
 
 app = Flask(__name__)
 api = Api(app)
 
+CREATE_DB = False
 MODE = True
+#MODE = False # Comment out the "MODE = True" and uncomment "MODE = False" when using in production
 
 app.config['SQLALCHEMY_DATABASE_URI'] = '*******************************************'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -75,8 +76,16 @@ class WeatherNodeData(db.Model):
         self.alti = alti
 
 
-#db.create_all()
 
+if(CREATE_DB == True):
+    db.create_all()
+
+class postData(Resource):
+    def post(self,id,dtime,temp,pres,humd,alti):
+        data = WeatherNodeData(id,dtime,temp,pres,humd,alti)
+        db.session.add(data)
+        db.session.commit()
+        return {"stat_code":"200"}
 
 class postStatus(Resource):
     def get(self,id,status):
@@ -92,6 +101,7 @@ class getStatus(Resource):
 
 api.add_resource(getStatus,"/getStatus")
 api.add_resource(postStatus,"/postStatus/<int:id>/<string:status>")
+api.add_resource(postData,"/postData/<int:id>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>")
 
 if __name__ == '__main__':
     app.run(debug=MODE)    
