@@ -35,11 +35,17 @@ import json
 app = Flask(__name__)
 api = Api(app)
 
-CREATE_DB = False
-MODE = True
-#MODE = False # Comment out the "MODE = True" and uncomment "MODE = False" when using in production
+# Use "MODE = False" for production and "MODE = True for debug mode"
+# Use "CREATE_DB = True" when database schema is to be updated
 
-app.config['SQLALCHEMY_DATABASE_URI'] = '*******************************************'
+CREATE_DB = False
+MODE = True 
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:@5Sresthaa1@localhost/weathertestdb'    # Debug database
+
+# Production Database below
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://vjvbpgdecdnbmj:32c49dc664c85edaf2e0e419f750795e3a0b4b244ef327ef45838c768c030b4c@ec2-3-220-98-137.compute-1.amazonaws.com:5432/d9j637994ppkk7'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -75,8 +81,6 @@ class WeatherNodeData(db.Model):
         self.humd = humd
         self.alti = alti
 
-
-
 if(CREATE_DB == True):
     db.create_all()
 
@@ -85,20 +89,25 @@ class postData(Resource):
         data = WeatherNodeData(id,dtime,temp,pres,humd,alti)
         db.session.add(data)
         db.session.commit()
-        return {"stat_code":"200"}
+        return {"status_code":"200","action_status":"successful"}
 
 class postStatus(Resource):
     def get(self,id,status):
         data = Stats(id,status)
         db.session.add(data)
         db.session.commit()
-        return{"dev_id":id,"dev_status":status,"post_Status":"Successful"}
+        return{"status_code":"200","dev_id":id,"dev_status":status,"post_Status":"Successful"}
 
 class getStatus(Resource):
     def get(self):
         data = db.session.query(Stats.id,Stats.status).all()
         return {"status_code":"200","device_statuses":data}
 
+class listApiData(Resource):
+    def get(self):
+        return{"status_code":"200","API_Version":"1.0.0","author":"Shaga Sresthaa","License":"GPL v3.0"}
+
+api.add_resource(listApiData,"/apiInfo")
 api.add_resource(getStatus,"/getStatus")
 api.add_resource(postStatus,"/postStatus/<int:id>/<string:status>")
 api.add_resource(postData,"/postData/<int:id>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>")
