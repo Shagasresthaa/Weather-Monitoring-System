@@ -1,2 +1,24 @@
 flaskRestApiCode/testing.py
 .vscode
+
+# dependencies
+weather-dash/node_modules
+weather-dash/.pnp
+.pnp.js
+
+# testing
+weather-dash/coverage
+
+# production
+weather-dash/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
