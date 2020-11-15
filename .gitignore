@@ -2,4 +2,4 @@ flaskRestApiCode/testing.py
 .vscode
 
 # dependencies
-weather-dash/node_modules/
+/weather-dash/node_modules/
