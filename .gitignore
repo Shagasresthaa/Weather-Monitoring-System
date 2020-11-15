@@ -1,3 +1,4 @@
 flaskRestApiCode/testing.py
 .vscode
 # dependencies
+/dashboard-code/weather-dash/node_modules
