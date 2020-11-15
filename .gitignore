@@ -3,5 +3,3 @@ flaskRestApiCode/testing.py
 
 # dependencies
 weather-dash/node_modules
-weather-dash/.pnp
-.pnp.js
