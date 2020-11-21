@@ -17,12 +17,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
+
+The full text of the GNU General Public License version 3 can be found in the
+source code root directory as COPYING.txt.
 */
 
-/*******************************
-*  @Title  Weather Node Hub Code
-*  @author Shaga Sresthaa
-********************************/
+/////////////////////////////////////////////
+//   @Title  Data Collection Node Code
+//   @author Shaga Sresthaa
+/////////////////////////////////////////////
 
 void setup() {
   // put your setup code here, to run once:
