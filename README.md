@@ -24,7 +24,13 @@ Going to add a fresh list of components used in order to accommodate all new cha
 
 For temporary basis BOM files are now present under PCB fabrication files section which can be used for reference
 
-The Weather Node V4 and its SMD version will be used for the project
+The PCB is not yet complete due to multiple issues so will update components once prototype works
+
+V3 works but will have memory issues and ESP not yet fully working
+
+Enire V4 models have multiple issues will update once the circuit is sorted
+
+<!--The Weather Node V4 and its SMD version will be used for the project-->
 
 ## If anyone finds any issue or anything that can be done better in schematic or PCB design or anything else in this project do raise an issue
 
