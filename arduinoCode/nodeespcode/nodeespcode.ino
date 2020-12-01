@@ -17,25 +17,22 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
+
+The full text of the GNU General Public License version 3 can be found in the
+source code root directory as COPYING.txt.
 */
 
-/****************************
-*  @Title  Profile Page Code
-*  @author Shaga Sresthaa
-***************************/
-package com.example.weathermonitor;
+///////////////////////////////////////////////
+//   @Title  ESP code for data transmit to api
+//   @author Shaga Sresthaa
+///////////////////////////////////////////////
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import androidx.fragment.app.Fragment;
+void setup() {
+  // put your setup code here, to run once:
 
-public class Profile extends Fragment {
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.profile, container, false);
-    }
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
 }
