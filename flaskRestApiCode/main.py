@@ -41,10 +41,10 @@ api = Api(app)
 CREATE_DB = False
 MODE = True 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = '**********************************'    # Debug database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:@5Sresthaa1@localhost/weathertestdb'    # Debug database
 
 # Production Database below
-#app.config['SQLALCHEMY_DATABASE_URI'] = '*********************************'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://vjvbpgdecdnbmj:32c49dc664c85edaf2e0e419f750795e3a0b4b244ef327ef45838c768c030b4c@ec2-3-220-98-137.compute-1.amazonaws.com:5432/d9j637994ppkk7'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
