@@ -1,22 +1,26 @@
 export const MenuItems = [
     {
         title: 'Node Dashboard',
-        url: '#',
+        to: '/nodedash',
+        url:'#',
         cName: 'nav-links'
     },
     {
         title: 'Node Stats',
-        url: '#',
+        to: '/nodestats',
+        url:'#',
         cName: 'nav-links'
     },
     {
         title: 'Data Infographics',
-        url: '#',
+        to: '/datainf',
+        url:'#',
         cName: 'nav-links'
     },
     {
         title: 'About',
-        url: '#',
+        to: '/about',
+        url:'#',
         cName: 'nav-links'
     },
 ]
