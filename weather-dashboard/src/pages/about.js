@@ -3,9 +3,12 @@ import '../styles/about.css'
 
 function About(){
     return(
-        <div>
+        <>
+        <div className="bg"></div>
+        <div className="centered">
             <h1>About Me Page</h1>
         </div>
+        </>
     );
 }
 

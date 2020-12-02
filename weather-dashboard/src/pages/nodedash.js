@@ -3,9 +3,12 @@ import '../styles/nodedash.css'
 
 function NodeDash(){
     return(
-        <div>
+        <>
+        <div className="bg4"></div>
+        <div className="centered">
             <h1>Node Dashboard Page</h1>
         </div>
+        </>
     );
 }
 

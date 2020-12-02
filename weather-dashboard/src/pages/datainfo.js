@@ -3,9 +3,12 @@ import '../styles/datainfo.css'
 
 function DataInfo(){
     return(
-        <div>
+        <>
+        <div className="bg2"></div>
+        <div className="centered">
             <h1>Data Infographics Page</h1>
         </div>
+        </>
     );
 }
 

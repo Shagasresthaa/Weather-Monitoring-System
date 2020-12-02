@@ -3,9 +3,12 @@ import '../styles/nodestats.css'
 
 function NodeStats(){
     return(
-        <div>
+        <>
+        <div className="bg5"></div>
+        <div className="centered">
             <h1>Node Statistics Page</h1>
         </div>
+        </>
     );
 }
 

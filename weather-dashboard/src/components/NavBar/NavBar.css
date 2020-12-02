@@ -5,28 +5,36 @@
     justify-content: center;
     align-items: center;
     font-size: 1.2rem;
+
+    position: absolute;
+    width: 100%;
+    z-index: 1;
 }
 
 .nvlink {
     color: #ffffff;
+    background: none;
     text-decoration: none;
     padding: 0.5rem 1rem;
 }
 
 .navbar-logo {
     color: #ffffff;
+    background: none;
     justify-self: start;
     margin-left: 20px;
     cursor: pointer;
 }
 
-.fa-react {
+.fa-cloud {
+    background: none;
     margin-left: 0.5rem;
     font-size: 1.6rem;
 
 }
 
 .nav-menu {
+    background: none;
     display: grid;
     grid-template-columns: repeat(5, auto);
     grid-gap: 10px;
@@ -38,6 +46,7 @@
 }
 
 .nav-links {
+    background: none;
     color: #ffffff;
     text-decoration: none;
     padding: 0.5rem 1rem;
@@ -63,6 +72,7 @@
     }
 
     .nav-menu {
+        background: none;
         display: flex;
         flex-direction: column;
         width: 100%;
@@ -83,6 +93,7 @@
     }
 
     .nav-links {
+        background: none;
         text-align: center;
         padding: 2rem;
         width: 100%;
@@ -91,7 +102,7 @@
 
     .nav-links:hover {
         background-color: #7577fa;
-        border-radius: 0;
+        border-radius: 10px;
     }
 
     .navbar-logo {

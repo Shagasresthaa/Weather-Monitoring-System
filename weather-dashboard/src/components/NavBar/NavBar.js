@@ -14,7 +14,7 @@ class NavBar extends Component{
         return(
             <nav className="NavbarItems">
                 <h1 className="navbar-logo">
-                    <Link to='/' className='nvlink'>
+                    <Link to='/home' className='nvlink'>
                     Dashboard
                     <i className="fas fa-cloud">
                     </i>
@@ -23,17 +23,19 @@ class NavBar extends Component{
                 <div className="menu-icon" onClick={this.handleClick}>
                     <i className={this.state.clicked ? 'fas fa-times' : 'fas fa-bars'}></i>
                 </div>
-                <ul className={this.state.clicked ? 'nav-menu active' : 'nav-menu'}>
+                <ul className={this.state.clicked ? 'nav-menu active' : 'nav-menu'} >
                     {MenuItems.map((item, index) => {
                         return (<Link to={item.to} className="nvlink">
-                        <li key={index} className={item.cName} href={item.url}>
+                        <li key={index} className={item.cName} href={item.url} onClick={this.handleClick}>
                                 {item.title}
                         </li>
                         </Link>
+                        
                         )
                     })}
                 </ul>
             </nav>
+            
         )
     }
 }
