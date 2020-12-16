@@ -28,7 +28,7 @@ source code root directory as COPYING.txt.
 #############################################
 
 from flask import Flask
-from flask_restful import Api,Resource
+from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 import json
 
@@ -39,41 +39,46 @@ api = Api(app)
 # Use "CREATE_DB = True" when database schema is to be updated
 
 CREATE_DB = False
-MODE = True 
+MODE = True
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:@5Sresthaa1@localhost/weathertestdb'    # Debug database
+# Debug database
+app.config['SQLALCHEMY_DATABASE_URI'] = '***************************************************************'
 
 # Production Database below
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://vjvbpgdecdnbmj:32c49dc664c85edaf2e0e419f750795e3a0b4b244ef327ef45838c768c030b4c@ec2-3-220-98-137.compute-1.amazonaws.com:5432/d9j637994ppkk7'
+#app.config['SQLALCHEMY_DATABASE_URI'] = '**************************************************************'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+
 class Stats(db.Model):
     __tablename__ = 'stats'
-    id = db.Column(db.Integer,primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(20))
 
-    def __init__(self,id,status):
+    def __init__(self, id, status):
         self.id = id
         self.status = status
 
+
 class nodeList(db.Model):
     __tablename__ = 'nodelist'
-    id = db.Column(db.Integer,primary_key=True)
-    def __init__(self,id):
+    id = db.Column(db.Integer, primary_key=True)
+
+    def __init__(self, id):
         self.id = id
+
 
 class WeatherNodeData(db.Model):
     __tablename__ = "weathernodedata"
-    id = db.Column(db.Integer,primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     dtime = db.Column(db.DateTime)
     temp = db.Column(db.Float)
     pres = db.Column(db.Float)
     humd = db.Column(db.Float)
     alti = db.Column(db.Float)
 
-    def __init__(self,id,dtime,temp,pres,humd,alti):
+    def __init__(self, id, dtime, temp, pres, humd, alti):
         self.id = id
         self.dtime = dtime
         self.temp = temp
@@ -81,36 +86,43 @@ class WeatherNodeData(db.Model):
         self.humd = humd
         self.alti = alti
 
+
 if(CREATE_DB == True):
     db.create_all()
 
+
 class postData(Resource):
-    def post(self,id,dtime,temp,pres,humd,alti):
-        data = WeatherNodeData(id,dtime,temp,pres,humd,alti)
+    def post(self, id, dtime, temp, pres, humd, alti):
+        data = WeatherNodeData(id, dtime, temp, pres, humd, alti)
         db.session.add(data)
         db.session.commit()
-        return {"status_code":"200","action_status":"successful"}
+        return {"status_code": "200", "action_status": "successful"}
+
 
 class postStatus(Resource):
-    def get(self,id,status):
-        data = Stats(id,status)
+    def get(self, id, status):
+        data = Stats(id, status)
         db.session.add(data)
         db.session.commit()
-        return{"status_code":"200","dev_id":id,"dev_status":status,"post_Status":"Successful"}
+        return{"status_code": "200", "dev_id": id, "dev_status": status, "post_Status": "Successful"}
+
 
 class getStatus(Resource):
     def get(self):
-        data = db.session.query(Stats.id,Stats.status).all()
-        return {"status_code":"200","device_statuses":data}
+        data = db.session.query(Stats.id, Stats.status).all()
+        return {"status_code": "200", "device_statuses": data}
+
 
 class listApiData(Resource):
     def get(self):
-        return{"status_code":"200","API_Version":"1.0.0","author":"Shaga Sresthaa","License":"GPL v3.0"}
+        return{"status_code": "200", "API_Version": "1.0.0", "author": "Shaga Sresthaa", "License": "GPL v3.0"}
 
-api.add_resource(listApiData,"/apiInfo")
-api.add_resource(getStatus,"/getStatus")
-api.add_resource(postStatus,"/postStatus/<int:id>/<string:status>")
-api.add_resource(postData,"/postData/<int:id>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>")
+
+api.add_resource(listApiData, "/apiInfo")
+api.add_resource(getStatus, "/getStatus")
+api.add_resource(postStatus, "/postStatus/<int:id>/<string:status>")
+api.add_resource(
+    postData, "/postData/<int:id>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>")
 
 if __name__ == '__main__':
-    app.run(debug=MODE)    
+    app.run(debug=MODE)

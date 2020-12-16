@@ -1,8 +1,8 @@
 import './App.css';
 import React from 'react';
 
-import NavBar from './components/NavBar/NavBar'
 import {BrowserRouter as Router,Switch,Route, Redirect} from 'react-router-dom'
+import NavBar from './components/NavBar/NavBar'
 
 import Home from './pages/home'
 import About from './pages/about'
@@ -10,12 +10,13 @@ import DataInfo from './pages/datainfo'
 import NodeDash from './pages/nodedash'
 import NodeStats from './pages/nodestats'
 import NotFound from './pages/404nf'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
     <Router>
-      <NavBar/>
     <div className="App">
+        <NavBar/>
       <Switch>
         <Route exact path="/">
           <Redirect to="/home" />
