@@ -11,9 +11,11 @@
 #define DHTPIN PB4   
 #define DHTTYPE DHT22 
 
+int UVOUT = PA0; //Output from the sensor
+int REF_3V3 = PA1; //3.3V power on the STM32 Board
+
 //Logo Bitmap Byte Array
 #pragma once
-
 #define JS2HF5_BMPWIDTH  80
 #define JS2HF5_BMPHEIGHT  35
 
@@ -54,6 +56,12 @@ void setup() {
   Serial.println(F("DHTxx test!"));
   dht.begin();
 
+  //UV Sensor Init
+  Serial.begin(9600);
+  pinMode(UVOUT, INPUT);
+  pinMode(REF_3V3, INPUT);
+  Serial.println("ML8511 example");
+
   //U8G2 init
   u8g2.begin();
   u8g2.enableUTF8Print();
@@ -72,12 +80,36 @@ void displayLogo(){
   delay(3500);
 }
 
+int averageAnalogRead(int pinToRead)
+{
+  byte numberOfReadings = 8;
+  unsigned int runningValue = 0; 
+ 
+  for(int x = 0 ; x < numberOfReadings ; x++)
+    runningValue += analogRead(pinToRead);
+  runningValue /= numberOfReadings;
+ 
+  return(runningValue);
+}
+ 
+float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 void loop() {
   float h = dht.readHumidity();
   // Read temperature as Celsius (the default)
   float t = dht.readTemperature();
   // Read temperature as Fahrenheit (isFahrenheit = true)
   float f = dht.readTemperature(true);
+  
+  int uvLevel = averageAnalogRead(UVOUT);
+  int refLevel = averageAnalogRead(REF_3V3);
+  float outputVoltage = 3.3 / refLevel * uvLevel;
+  float uvIntensity = mapfloat(outputVoltage, 0.99, 2.8, 0.0, 15.0); //Convert the voltage to a UV intensity level
+  Serial.print(" / UV Intensity (mW/cm^2): ");
+  Serial.println(uvIntensity);
 
   // Check if any reads failed and exit early (to try again).
   if (isnan(h) || isnan(t) || isnan(f)) {
@@ -105,6 +137,11 @@ void loop() {
   u8g2.print("HIdx: ");
   u8g2.print(hic);
   u8g2.println("°C");
+    
+  u8g2.setCursor(0, 55); 
+  u8g2.print("UVIN: ");
+  u8g2.print(uvIntensity);
+  u8g2.println("mW/cm²");
   u8g2.sendBuffer();
 
   delay(2000);
