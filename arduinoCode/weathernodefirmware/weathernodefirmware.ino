@@ -1,6 +1,11 @@
 #include "DHT.h"
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include <Wire.h>
+#include "RTClib.h"
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP085_U.h>
+
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
 #endif
@@ -11,6 +16,15 @@
 #define DHTPIN PB4   
 #define DHTTYPE DHT22 
 
+RTC_DS1307 rtc;
+Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
+//Use for SSD1306 based oled
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, LED_BUILTIN); 
+//Use for SH1106 based oled
+//U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, LED_BUILTIN);
+DHT dht(DHTPIN, DHTTYPE);
+
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 int UVOUT = PA0; //Output from the sensor
 int REF_3V3 = PA1; //3.3V power on the STM32 Board
 
@@ -44,20 +58,37 @@ static const unsigned char bitmap_js2hf5[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-//Logo Bitmap Byte Array Ends
-
-//U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE); //For SSD1306 driver oled
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, LED_BUILTIN);
-DHT dht(DHTPIN, DHTTYPE);
-
 void setup() {
+  //DS3231 RTC module init
+  while (!Serial); // for Leonardo/Micro/Zero
+  Serial.begin(57600);
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
+  }
+  // Remove the NOT symbol (!) in below 'if' condition if module was previously initialised so fresh date may be uploaded
+  if (!rtc.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // Takes the time at which sketch was compiled
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // For explicit time setting
+    // rtc.adjust(DateTime(2021, 1, 26, 13,54, 0));
+  }
+
+  //BMP180/BMP280 init
+  Serial.println("Pressure Sensor Test"); Serial.println("");
+  if(!bmp.begin())
+  {
+    Serial.print("Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!");
+    while(1);
+  }
+  
   //DHT22 init
   Serial.begin(9600);
   Serial.println(F("DHTxx test!"));
   dht.begin();
 
   //UV Sensor Init
-  Serial.begin(9600);
   pinMode(UVOUT, INPUT);
   pinMode(REF_3V3, INPUT);
   Serial.println("ML8511 example");
@@ -98,6 +129,39 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 
 void loop() {
+ DateTime now = rtc.now();
+  String yr = String(now.year());
+  String mnth = String(now.month(),DEC);
+  String dy = String(now.day());
+  String hr = String(now.hour());
+  String mn = String(now.minute());
+  String sc = String(now.second());
+  String dtme = dy + "/" + mnth + "/" + yr + " " + hr + ":" + mn + ":" + sc;
+  String dt = dy + "/" + mnth + "/" + yr;
+  String tm = " " + hr + ":" + mn + ":" + sc;
+  Serial.println(dtme);
+  Serial.println(dt);
+  Serial.println(tm);
+
+  float pres;
+  float temperature;
+  float slp;
+  float alti;
+  
+  sensors_event_t event;
+  bmp.getEvent(&event);
+  if (event.pressure)
+  {
+    pres = event.pressure*0.000987;
+    bmp.getTemperature(&temperature);
+    slp = SENSORS_PRESSURE_SEALEVELHPA;
+    alti = bmp.pressureToAltitude(slp,event.pressure);
+  }
+  else
+  {
+    Serial.println("Sensor error");
+  }
+  
   float h = dht.readHumidity();
   // Read temperature as Celsius (the default)
   float t = dht.readTemperature();
@@ -108,7 +172,7 @@ void loop() {
   int refLevel = averageAnalogRead(REF_3V3);
   float outputVoltage = 3.3 / refLevel * uvLevel;
   float uvIntensity = mapfloat(outputVoltage, 0.99, 2.8, 0.0, 15.0); //Convert the voltage to a UV intensity level
-  Serial.print(" / UV Intensity (mW/cm^2): ");
+  Serial.print("UV Intensity (mW/cm^2): ");
   Serial.println(uvIntensity);
 
   // Check if any reads failed and exit early (to try again).
@@ -121,28 +185,37 @@ void loop() {
   float hic = dht.computeHeatIndex(t, h, false);
 
   //Display on oled Display
-  u8g2.clearBuffer();
-  u8g2.setCursor(0, 10);                   //text position (left botom corner)
-  u8g2.setFont(u8g2_font_unifont_t_latin); //first font             
-  u8g2.print("Temp: ");
-  u8g2.print(t);
-  u8g2.println("°C");
+  u8g2.clearBuffer();                   
+  u8g2.setFont(u8g2_font_6x12_tr);
+  u8g2.setCursor(10, 10);
+  u8g2.print(dt);
+  u8g2.println(tm);
   
-  u8g2.setCursor(0, 25); 
-  u8g2.print("Humd: ");
-  u8g2.print(h);
-  u8g2.println("%");
+  u8g2.setCursor(0, 20);              
+  u8g2.print("Temp: ");
+  u8g2.print(temperature);
+  u8g2.println(" C");
+  
+  u8g2.setCursor(0, 30);              
+  u8g2.print("Pres: ");
+  u8g2.print(pres);
+  u8g2.println(" atm");
   
   u8g2.setCursor(0, 40); 
+  u8g2.print("Humd: ");
+  u8g2.print(h);
+  u8g2.println(" %");
+  
+  u8g2.setCursor(0, 50); 
   u8g2.print("HIdx: ");
   u8g2.print(hic);
-  u8g2.println("°C");
+  u8g2.println(" C");
     
-  u8g2.setCursor(0, 55); 
+  u8g2.setCursor(0, 60); 
   u8g2.print("UVIN: ");
   u8g2.print(uvIntensity);
-  u8g2.println("mW/cm²");
+  u8g2.println(" mW/cm^2");
   u8g2.sendBuffer();
 
-  delay(2000);
+  delay(1000);
 }
