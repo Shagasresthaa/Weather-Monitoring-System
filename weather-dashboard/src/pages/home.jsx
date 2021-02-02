@@ -15,13 +15,13 @@ function Home() {
       <div className="centered4">
         <div className="row">
           <div className="col-md-4">
-            <Card img={Database} h4="Database Status" p="Active" />
+            <Card img={Database} h4="Database Status" p="Active"/>
           </div>
           <div className="col-md-4">
-            <Card img={Node} h4="Active Nodes" p="Active" />
+            <Card img={Node} h4="Active Nodes" p="Active"/>
           </div>
           <div className="col-md-4">
-            <Card img={TotNodes} h4="Total Nodes" p="Active" />
+            <Card img={TotNodes} h4="Total Nodes" p="Active"/>
           </div>
         </div>
       </div>

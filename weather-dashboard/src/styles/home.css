@@ -23,6 +23,9 @@ html {
     z-index: 1;
     transform: translate(0%, 30%);
     max-width: max-content;
+    display: flex !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 @media (max-width:800px) {

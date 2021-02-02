@@ -5,16 +5,11 @@
 #include "RTClib.h"
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP085_U.h>
-
-#ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
-#endif
-#ifdef U8X8_HAVE_HW_I2C
-#include <Wire.h>
-#endif
 
 #define DHTPIN PB4   
-#define DHTTYPE DHT22 
+#define DHTTYPE DHT22
+#define CHIPSELSD PA8 
 
 RTC_DS1307 rtc;
 Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
@@ -60,19 +55,14 @@ static const unsigned char bitmap_js2hf5[] PROGMEM = {
 
 void setup() {
   //DS3231 RTC module init
-  while (!Serial); // for Leonardo/Micro/Zero
   Serial.begin(57600);
   if (! rtc.begin()) {
     Serial.println("Couldn't find RTC");
     while (1);
   }
-  // Remove the NOT symbol (!) in below 'if' condition if module was previously initialised so fresh date may be uploaded
   if (!rtc.isrunning()) {
     Serial.println("RTC is NOT running!");
-    // Takes the time at which sketch was compiled
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-    // For explicit time setting
-    // rtc.adjust(DateTime(2021, 1, 26, 13,54, 0));
   }
 
   //BMP180/BMP280 init
@@ -130,19 +120,7 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 
 void loop() {
  DateTime now = rtc.now();
-  String yr = String(now.year());
-  String mnth = String(now.month(),DEC);
-  String dy = String(now.day());
-  String hr = String(now.hour());
-  String mn = String(now.minute());
-  String sc = String(now.second());
-  String dtme = dy + "/" + mnth + "/" + yr + " " + hr + ":" + mn + ":" + sc;
-  String dt = dy + "/" + mnth + "/" + yr;
-  String tm = " " + hr + ":" + mn + ":" + sc;
-  Serial.println(dtme);
-  Serial.println(dt);
-  Serial.println(tm);
-
+  String dtme = String(now.day()) + "/" + String(now.month()) + "/" + String(now.year()) + " " + String(now.hour()) + ":" + String(now.minute()) + ":" + String(now.second());
   float pres;
   float temperature;
   float slp;
@@ -171,9 +149,7 @@ void loop() {
   int uvLevel = averageAnalogRead(UVOUT);
   int refLevel = averageAnalogRead(REF_3V3);
   float outputVoltage = 3.3 / refLevel * uvLevel;
-  float uvIntensity = mapfloat(outputVoltage, 0.99, 2.8, 0.0, 15.0); //Convert the voltage to a UV intensity level
-  Serial.print("UV Intensity (mW/cm^2): ");
-  Serial.println(uvIntensity);
+  float uvIntensity = mapfloat(outputVoltage, 0.99, 2.8, 0.0, 15.0); 
 
   // Check if any reads failed and exit early (to try again).
   if (isnan(h) || isnan(t) || isnan(f)) {
@@ -184,34 +160,36 @@ void loop() {
   // Compute heat index in Celsius (isFahreheit = false)
   float hic = dht.computeHeatIndex(t, h, false);
 
+  //Creating string for logging data
+  String data = dtme + "," + String(pres) + "," + String(temperature) + "," + String(alti) + "," + String(h) + "," + String(t) + "," + String(f) + "," + String(hic) + "," + String(uvLevel) + "," + String(refLevel) + "," + String(outputVoltage) + "," + String(uvIntensity); 
+
   //Display on oled Display
   u8g2.clearBuffer();                   
   u8g2.setFont(u8g2_font_6x12_tr);
   u8g2.setCursor(10, 10);
-  u8g2.print(dt);
-  u8g2.println(tm);
+  u8g2.println(dtme);
   
-  u8g2.setCursor(0, 20);              
+  u8g2.setCursor(0, 24);              
   u8g2.print("Temp: ");
   u8g2.print(temperature);
   u8g2.println(" C");
   
-  u8g2.setCursor(0, 30);              
+  u8g2.setCursor(0, 34);              
   u8g2.print("Pres: ");
   u8g2.print(pres);
   u8g2.println(" atm");
   
-  u8g2.setCursor(0, 40); 
+  u8g2.setCursor(0, 44); 
   u8g2.print("Humd: ");
   u8g2.print(h);
   u8g2.println(" %");
   
-  u8g2.setCursor(0, 50); 
+  u8g2.setCursor(0, 54); 
   u8g2.print("HIdx: ");
   u8g2.print(hic);
   u8g2.println(" C");
     
-  u8g2.setCursor(0, 60); 
+  u8g2.setCursor(0, 64); 
   u8g2.print("UVIN: ");
   u8g2.print(uvIntensity);
   u8g2.println(" mW/cm^2");
