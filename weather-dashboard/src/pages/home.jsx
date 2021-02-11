@@ -6,7 +6,6 @@ import Card from '../components/cards/CardsUI'
 import Database from '../assets/database.png'
 import Node from '../assets/img-servers.png'
 import TotNodes from '../assets/tnodes.png'
-import Dummy from '../assets/dummy.jpeg'
 
 function Home() {
   return (

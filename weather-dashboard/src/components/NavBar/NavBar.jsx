@@ -14,7 +14,7 @@ class NavBar extends Component{
         return(
             <nav className="NavbarItems">
                 <h1 className="navbar-logo">
-                    <Link to='/home' className='nvlink'>
+                    <Link to='/home' className='nvlink' style={{pointerEvents:"none"}}>
                     Dashboard
                     <i className="fas fa-cloud">
                     </i>
