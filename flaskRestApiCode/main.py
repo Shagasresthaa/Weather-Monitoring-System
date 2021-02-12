@@ -39,13 +39,13 @@ api = Api(app)
 # Use "CREATE_DB = True" when database schema is to be updated
 
 CREATE_DB = False
-MODE = True
+MODE = False
 
 # Debug database
-app.config['SQLALCHEMY_DATABASE_URI'] = '***************************************************************'
+#app.config['SQLALCHEMY_DATABASE_URI'] = '***********************************************************'
 
 # Production Database below
-#app.config['SQLALCHEMY_DATABASE_URI'] = '**************************************************************'
+app.config['SQLALCHEMY_DATABASE_URI'] = '**********************************************************'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -64,36 +64,50 @@ class Stats(db.Model):
 class nodeList(db.Model):
     __tablename__ = 'nodelist'
     id = db.Column(db.Integer, primary_key=True)
+    loc = db.Column(db.String(50))
 
-    def __init__(self, id):
+    def __init__(self, id, loc):
         self.id = id
+        self.loc = loc
 
 
 class WeatherNodeData(db.Model):
     __tablename__ = "weathernodedata"
     id = db.Column(db.Integer, primary_key=True)
+    loc = db.Column(db.String(50))
     dtime = db.Column(db.DateTime)
     temp = db.Column(db.Float)
     pres = db.Column(db.Float)
     humd = db.Column(db.Float)
     alti = db.Column(db.Float)
+    uvid = db.Column(db.Float)
 
-    def __init__(self, id, dtime, temp, pres, humd, alti):
+    def __init__(self, id, loc, dtime, temp, pres, humd, alti, uvid):
         self.id = id
+        self.loc = loc
         self.dtime = dtime
         self.temp = temp
         self.pres = pres
         self.humd = humd
         self.alti = alti
+        self.uvid = uvid
 
 
 if(CREATE_DB == True):
     db.create_all()
 
 
+class createNode(Resource):
+    def get(self, id, loc):
+        data = nodeList(id, loc)
+        db.session.add(data)
+        db.session.commit()
+        return {"status_code": "200", "action_status": "successful"}
+
+
 class postData(Resource):
-    def post(self, id, dtime, temp, pres, humd, alti):
-        data = WeatherNodeData(id, dtime, temp, pres, humd, alti)
+    def post(self, id, loc, dtime, temp, pres, humd, alti, uvid):
+        data = WeatherNodeData(id, loc, dtime, temp, pres, humd, alti, uvid)
         db.session.add(data)
         db.session.commit()
         return {"status_code": "200", "action_status": "successful"}
@@ -121,8 +135,9 @@ class listApiData(Resource):
 api.add_resource(listApiData, "/apiInfo")
 api.add_resource(getStatus, "/getStatus")
 api.add_resource(postStatus, "/postStatus/<int:id>/<string:status>")
+api.add_resource(createNode, "createNode/<int:id>/<string:status>")
 api.add_resource(
-    postData, "/postData/<int:id>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>")
+    postData, "/postData/<int:id>/<string:loc>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>/<float:uvid>")
 
 if __name__ == '__main__':
     app.run(debug=MODE)
