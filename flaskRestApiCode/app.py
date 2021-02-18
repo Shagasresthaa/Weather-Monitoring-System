@@ -30,71 +30,18 @@ source code root directory as COPYING.txt.
 from flask import Flask
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
+from models import (nodeList, Stats, WeatherNodeData)
 import json
+
+MODE = True
+CREATE_DB = False
 
 app = Flask(__name__)
 api = Api(app)
 
-# Use "MODE = False" for production and "MODE = True for debug mode"
-# Use "CREATE_DB = True" when database schema is to be updated
+app.config.from_pyfile('config.py')
 
-CREATE_DB = False
-MODE = False
-
-# Debug database
-#app.config['SQLALCHEMY_DATABASE_URI'] = '***********************************************************'
-
-# Production Database below
-app.config['SQLALCHEMY_DATABASE_URI'] = '**********************************************************'
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
-
-class Stats(db.Model):
-    __tablename__ = 'stats'
-    id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(20))
-
-    def __init__(self, id, status):
-        self.id = id
-        self.status = status
-
-
-class nodeList(db.Model):
-    __tablename__ = 'nodelist'
-    id = db.Column(db.Integer, primary_key=True)
-    loc = db.Column(db.String(50))
-
-    def __init__(self, id, loc):
-        self.id = id
-        self.loc = loc
-
-
-class WeatherNodeData(db.Model):
-    __tablename__ = "weathernodedata"
-    id = db.Column(db.Integer, primary_key=True)
-    loc = db.Column(db.String(50))
-    dtime = db.Column(db.DateTime)
-    temp = db.Column(db.Float)
-    pres = db.Column(db.Float)
-    humd = db.Column(db.Float)
-    alti = db.Column(db.Float)
-    uvid = db.Column(db.Float)
-
-    def __init__(self, id, loc, dtime, temp, pres, humd, alti, uvid):
-        self.id = id
-        self.loc = loc
-        self.dtime = dtime
-        self.temp = temp
-        self.pres = pres
-        self.humd = humd
-        self.alti = alti
-        self.uvid = uvid
-
-
-if(CREATE_DB == True):
-    db.create_all()
 
 
 class createNode(Resource):
@@ -106,7 +53,7 @@ class createNode(Resource):
 
 
 class postData(Resource):
-    def post(self, id, loc, dtime, temp, pres, humd, alti, uvid):
+    def get(self, id, loc, dtime, temp, pres, humd, alti, uvid):
         data = WeatherNodeData(id, loc, dtime, temp, pres, humd, alti, uvid)
         db.session.add(data)
         db.session.commit()
@@ -135,7 +82,7 @@ class listApiData(Resource):
 api.add_resource(listApiData, "/apiInfo")
 api.add_resource(getStatus, "/getStatus")
 api.add_resource(postStatus, "/postStatus/<int:id>/<string:status>")
-api.add_resource(createNode, "createNode/<int:id>/<string:status>")
+api.add_resource(createNode, "/createNode/<int:id>/<string:status>")
 api.add_resource(
     postData, "/postData/<int:id>/<string:loc>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>/<float:uvid>")
 
