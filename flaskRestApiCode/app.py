@@ -31,9 +31,10 @@ from flask import Flask
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from models import (nodeList, Stats, WeatherNodeData)
+from models import db as db1
 import json
 
-MODE = True
+MODE = False
 CREATE_DB = False
 
 app = Flask(__name__)
@@ -42,6 +43,10 @@ api = Api(app)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
+
+if(CREATE_DB):
+    with app.app_context():
+        db1.create_all()
 
 
 class createNode(Resource):
