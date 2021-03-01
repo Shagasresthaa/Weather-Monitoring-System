@@ -27,7 +27,7 @@ source code root directory as COPYING.txt.
 #   @author Shaga Sresthaa
 #############################################
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from models import (nodeList, Stats, WeatherNodeData, adminAccessTable)
@@ -85,7 +85,24 @@ class listApiData(Resource):
         return{"status_code": "200", "API_Version": "1.1.0", "author": "Shaga Sresthaa", "License": "GPL v3.0"}
 
 
+class sendWeatherData(Resource):
+    def get(self, nid):
+        data = db.session.query(
+            WeatherNodeData.id, WeatherNodeData.loc, WeatherNodeData.dtime, WeatherNodeData.temp, WeatherNodeData.pres, WeatherNodeData.humd, WeatherNodeData.alti, WeatherNodeData.uvid).all()
+        list1 = []
+        for lst in data:
+
+            txt = {'id': str(lst.id), 'date_time': str(lst.dtime), 'location': str(lst.loc), 'temp': str(
+                lst.temp), 'pres': str(lst.pres), 'humd': str(lst.humd), 'alti': str(lst.alti), 'uvindex': str(lst.uvid)}
+
+            list1.append(txt)
+
+        response = jsonify({"status_code": 200, "data": list1})
+        return response
+
+
 api.add_resource(listApiData, "/apiInfo")
+api.add_resource(sendWeatherData, "/getWtData/<int:nid>")
 api.add_resource(getStatus, "/getStatus")
 api.add_resource(postStatus, "/postStatus/<int:id>/<string:status>")
 api.add_resource(createNode, "/createNode/<int:id>/<string:status>")
