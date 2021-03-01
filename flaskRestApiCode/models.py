@@ -25,7 +25,8 @@ class nodeList(db.Model):
 
 class WeatherNodeData(db.Model):
     __tablename__ = "weathernodedata"
-    id = db.Column(db.Integer, primary_key=True)
+    rqid = db.Column(db.String(15), primary_key=True)
+    id = db.Column(db.Integer)
     loc = db.Column(db.String(50))
     dtime = db.Column(db.DateTime)
     temp = db.Column(db.Float)
@@ -34,7 +35,8 @@ class WeatherNodeData(db.Model):
     alti = db.Column(db.Float)
     uvid = db.Column(db.Float)
 
-    def __init__(self, id, loc, dtime, temp, pres, humd, alti, uvid):
+    def __init__(self, rqid, id, loc, dtime, temp, pres, humd, alti, uvid):
+        self.rqid = rqid
         self.id = id
         self.loc = loc
         self.dtime = dtime
@@ -43,3 +45,27 @@ class WeatherNodeData(db.Model):
         self.humd = humd
         self.alti = alti
         self.uvid = uvid
+
+
+class adminAccessTable(db.Model):
+    __tablename__ = "adminDashTable"
+    id = db.Column(db.Integer, primary_key=True)
+    nm = db.Column(db.String(100))
+    admStat = db.Column(db.Boolean)
+
+    def __init__(self, id, nm, admStat):
+        self.id = id
+        self.nm = nm
+        self.admStat = admStat
+
+
+class requestHist(db.Model):
+    __tablename__ = "requestHistTable"
+    rqid = db.Column(db.String(15), primary_key=True)
+    id = db.Column(db.Integer)
+    dtime = db.Column(db.DateTime)
+
+    def __init__(self, reqid, id, dtime):
+        self.rqid = reqid
+        self.id = id
+        self.dtime = dtime

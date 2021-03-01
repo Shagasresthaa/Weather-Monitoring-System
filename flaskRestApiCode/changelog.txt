@@ -1,0 +1,9 @@
+v.1.0.0*********************************************************************************************************************************
+*Added Postgres DB post data functionality
+*Added table for node list
+*Added table for Weather Data
+*Added table for node status
+*Added basic API request response structure
+
+v.1.1.0**********************************************************************************************************************************
+*Modified nodelist table for adding node location

@@ -30,11 +30,11 @@ source code root directory as COPYING.txt.
 from flask import Flask
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
-from models import (nodeList, Stats, WeatherNodeData)
+from models import (nodeList, Stats, WeatherNodeData, adminAccessTable)
 from models import db as db1
 import json
 
-MODE = False
+MODE = True
 CREATE_DB = False
 
 app = Flask(__name__)
@@ -58,8 +58,9 @@ class createNode(Resource):
 
 
 class postData(Resource):
-    def get(self, id, loc, dtime, temp, pres, humd, alti, uvid):
-        data = WeatherNodeData(id, loc, dtime, temp, pres, humd, alti, uvid)
+    def get(self, rqid, id, loc, dtime, temp, pres, humd, alti, uvid):
+        data = WeatherNodeData(rqid, id, loc, dtime,
+                               temp, pres, humd, alti, uvid)
         db.session.add(data)
         db.session.commit()
         return {"status_code": "200", "action_status": "successful"}
@@ -81,7 +82,7 @@ class getStatus(Resource):
 
 class listApiData(Resource):
     def get(self):
-        return{"status_code": "200", "API_Version": "1.0.0", "author": "Shaga Sresthaa", "License": "GPL v3.0"}
+        return{"status_code": "200", "API_Version": "1.1.0", "author": "Shaga Sresthaa", "License": "GPL v3.0"}
 
 
 api.add_resource(listApiData, "/apiInfo")
@@ -89,7 +90,7 @@ api.add_resource(getStatus, "/getStatus")
 api.add_resource(postStatus, "/postStatus/<int:id>/<string:status>")
 api.add_resource(createNode, "/createNode/<int:id>/<string:status>")
 api.add_resource(
-    postData, "/postData/<int:id>/<string:loc>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>/<float:uvid>")
+    postData, "/postData/<string:rqid>/<int:id>/<string:loc>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>/<float:uvid>")
 
 if __name__ == '__main__':
     app.run(debug=MODE)
