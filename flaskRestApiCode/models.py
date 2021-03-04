@@ -25,7 +25,7 @@ class nodeList(db.Model):
 
 class WeatherNodeData(db.Model):
     __tablename__ = "weathernodedata"
-    rqid = db.Column(db.String(15), primary_key=True)
+    rqid = db.Column(db.String(32), primary_key=True)
     id = db.Column(db.Integer)
     loc = db.Column(db.String(50))
     dtime = db.Column(db.DateTime)
@@ -61,7 +61,7 @@ class adminAccessTable(db.Model):
 
 class requestHist(db.Model):
     __tablename__ = "requestHistTable"
-    rqid = db.Column(db.String(15), primary_key=True)
+    rqid = db.Column(db.String(32), primary_key=True)
     id = db.Column(db.Integer)
     dtime = db.Column(db.DateTime)
 

@@ -30,9 +30,12 @@ source code root directory as COPYING.txt.
 from flask import Flask, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
-from models import (nodeList, Stats, WeatherNodeData, adminAccessTable)
+from models import (nodeList, Stats, WeatherNodeData,
+                    adminAccessTable, requestHist)
 from models import db as db1
 import json
+import datetime as dt
+import uuid
 
 MODE = True
 CREATE_DB = False
@@ -88,7 +91,7 @@ class listApiData(Resource):
 class sendWeatherData(Resource):
     def get(self, nid):
         data = db.session.query(
-            WeatherNodeData.id, WeatherNodeData.loc, WeatherNodeData.dtime, WeatherNodeData.temp, WeatherNodeData.pres, WeatherNodeData.humd, WeatherNodeData.alti, WeatherNodeData.uvid).all()
+            WeatherNodeData.id, WeatherNodeData.loc, WeatherNodeData.dtime, WeatherNodeData.temp, WeatherNodeData.pres, WeatherNodeData.humd, WeatherNodeData.alti, WeatherNodeData.uvid).filter_by(id=nid)
         list1 = []
         for lst in data:
 
@@ -101,6 +104,44 @@ class sendWeatherData(Resource):
         return response
 
 
+def idGenerator():
+    rid = uuid.uuid4().hex
+    return rid
+
+
+def checkDuplicate(rndId):
+    data = db.session.query(requestHist.rqid).filter_by(rqid=rndId).count()
+
+    if(data == 0):
+        return False
+    else:
+        return True
+
+
+def sendReqId():
+    reqd = idGenerator()
+
+    while(checkDuplicate(reqd)):
+        reqd = idGenerator()
+
+    return reqd
+
+
+class reqIdGen(Resource):
+    def get(self, nid):
+        now = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        requestId = sendReqId()
+
+        data = requestHist(requestId, nid, now)
+        db.session.add(data)
+        db.session.commit()
+
+        response = jsonify(
+            {"status_code": 200, "dtime": str(now), "node_id": nid, "reqid": requestId})
+        return response
+
+
+api.add_resource(reqIdGen, "/getReqIdAuth/<int:nid>")
 api.add_resource(listApiData, "/apiInfo")
 api.add_resource(sendWeatherData, "/getWtData/<int:nid>")
 api.add_resource(getStatus, "/getStatus")
