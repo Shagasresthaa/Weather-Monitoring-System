@@ -7,20 +7,24 @@ class Stats(db.Model):
     __tablename__ = 'stats'
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(20))
+    mac_id = db.Column(db.String(17))
 
-    def __init__(self, id, status):
+    def __init__(self, id, status, mac_id):
         self.id = id
         self.status = status
+        self.mac_id = mac_id
 
 
 class nodeList(db.Model):
     __tablename__ = 'nodelist'
     id = db.Column(db.Integer, primary_key=True)
     loc = db.Column(db.String(50))
+    mac_id = db.Column(db.String(17))
 
-    def __init__(self, id, loc):
+    def __init__(self, id, loc, mac_id):
         self.id = id
         self.loc = loc
+        self.mac_id = mac_id
 
 
 class WeatherNodeData(db.Model):
@@ -64,8 +68,10 @@ class requestHist(db.Model):
     rqid = db.Column(db.String(32), primary_key=True)
     id = db.Column(db.Integer)
     dtime = db.Column(db.DateTime)
+    mac_id = db.Column(db.String(17))
 
-    def __init__(self, reqid, id, dtime):
+    def __init__(self, reqid, id, dtime, mac_id):
         self.rqid = reqid
         self.id = id
         self.dtime = dtime
+        self.mac_id = mac_id

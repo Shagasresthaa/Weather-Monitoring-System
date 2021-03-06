@@ -6,4 +6,23 @@ v.1.0.0*************************************************************************
 *Added basic API request response structure
 
 v.1.1.0**********************************************************************************************************************************
-*Modified nodelist table for adding node location
+*Seperated the code into seperate parts for Models, Configuration and Driver code
+*Added location parameter for nodelist table
+*Added location parameter for weather data table
+*Created a placeholder table for Admin Users Table
+*Added function to send data from database to the destination
+
+v.1.2.0
+*Created methods for Node Creation and Registration
+*Created Table for storing Node Request History
+*Created methods for creating a request for node data dump
+*Added Request ID parameter for Weather Data Table
+*Added Mac ID parameter for Stats table
+*Added Mac ID parameter for Node List Table
+*Added Mac ID parameter for Weather Data Table
+*Added Mac ID parameter for Request History Table
+*Added method for request id validation
+*Added method for verifying authenticity of data upload request by node
+*Increased size of Request ID to 32 characters from 15 characters
+*Increased size of Node ID to 7 characters (To be Modified to alphanumeric 32 character)
+*Added method to query node status based on the Node ID

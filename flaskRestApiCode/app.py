@@ -36,6 +36,7 @@ from models import db as db1
 import json
 import datetime as dt
 import uuid
+from random import randint
 
 MODE = True
 CREATE_DB = False
@@ -52,40 +53,42 @@ if(CREATE_DB):
         db1.create_all()
 
 
-class createNode(Resource):
-    def get(self, id, loc):
-        data = nodeList(id, loc)
-        db.session.add(data)
-        db.session.commit()
-        return {"status_code": "200", "action_status": "successful"}
-
-
 class postData(Resource):
-    def get(self, rqid, id, loc, dtime, temp, pres, humd, alti, uvid):
-        data = WeatherNodeData(rqid, id, loc, dtime,
-                               temp, pres, humd, alti, uvid)
-        db.session.add(data)
-        db.session.commit()
-        return {"status_code": "200", "action_status": "successful"}
+    def get(self, rqid, mac_id, id, loc, dtime, temp, pres, humd, alti, uvid):
+        isValidRequest = checkReq(rqid, mac_id, id)
+        if(isValidRequest):
+            data = WeatherNodeData(rqid, id, loc, dtime,
+                                   temp, pres, humd, alti, uvid)
+            db.session.add(data)
+            db.session.commit()
+            return jsonify({"status_code": "200", "action_status": "successful", "data": dt})
+
+        else:
+            return jsonify({"status_code": 403, "action_status": "Invalid Request"})
 
 
 class postStatus(Resource):
-    def get(self, id, status):
-        data = Stats(id, status)
+    def get(self, id, status, mac_id):
+        data = Stats(id, status, mac_id)
         db.session.add(data)
         db.session.commit()
-        return{"status_code": "200", "dev_id": id, "dev_status": status, "post_Status": "Successful"}
+        return jsonify({"status_code": "200", "dev_id": id, "dev_status": status, "dev_mac_id": mac_id, "post_Status": "Successful"})
 
 
 class getStatus(Resource):
-    def get(self):
-        data = db.session.query(Stats.id, Stats.status).all()
-        return {"status_code": "200", "device_statuses": data}
+    def get(self, nid):
+        data = db.session.query(Stats.id, Stats.status).filter_by(id=nid)
+
+        for lst in data:
+            resp = {"status_code": 200, "node_id": nid,
+                    "node_status": lst.status}
+
+        return resp
 
 
 class listApiData(Resource):
     def get(self):
-        return{"status_code": "200", "API_Version": "1.1.0", "author": "Shaga Sresthaa", "License": "GPL v3.0"}
+        return jsonify({"status_code": "200", "API_Version": "1.2.0", "Author": "Shaga Sresthaa", "License": "GPL v3.0"})
 
 
 class sendWeatherData(Resource):
@@ -118,6 +121,21 @@ def checkDuplicate(rndId):
         return True
 
 
+def checkNodeRequestValidity(nid, mac_id):
+    data = db.session.query(nodeList.id, nodeList.mac_id).filter_by(id=nid)
+
+    isValid = False
+
+    for lst in data:
+
+        if(lst.id == nid and lst.mac_id == mac_id):
+            isValid = True
+        else:
+            isValid = False
+
+    return isValid
+
+
 def sendReqId():
     reqd = idGenerator()
 
@@ -127,28 +145,92 @@ def sendReqId():
     return reqd
 
 
+def checkReq(rqid, macAddr, nid):
+    data = db.session.query(
+        requestHist.rqid, requestHist.mac_id, requestHist.id).filter_by(rqid=rqid)
+    for lst in data:
+        if(lst.rqid == rqid and lst.mac_id == macAddr and lst.id == nid):
+            return True
+
+        else:
+            return False
+
+
+def checkDuplicateId(nid):
+    data = db.session.query(nodeList.id).filter_by(id=nid).count()
+    if(data == 0):
+        return False
+    else:
+        return True
+
+
+def idGenForNode():
+    nid = randint(1000000, 9999999)
+    return nid
+
+
+def nidGenerator():
+    nid = idGenForNode()
+    while(checkDuplicateId(nid)):
+        nid = idGenForNode()
+
+    return nid
+
+
+def checkNodeCreation(nid, mc_id):
+    data = db.session.query(nodeList.id, nodeList.mac_id).filter_by(id=nid)
+
+    for lst in data:
+        if(lst.id == nid and lst.mac_id == mc_id):
+            return True
+        else:
+            return False
+
+
 class reqIdGen(Resource):
-    def get(self, nid):
+    def get(self, nid, mac_id):
         now = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        requestId = sendReqId()
+        isValid = checkNodeRequestValidity(nid, mac_id)
 
-        data = requestHist(requestId, nid, now)
-        db.session.add(data)
-        db.session.commit()
+        if(isValid):
+            requestId = sendReqId()
+            data = requestHist(requestId, nid, now, mac_id)
+            db.session.add(data)
+            db.session.commit()
+            response = jsonify({"status_code": 200, "dtime": str(
+                now), "node_id": nid, "reqid": requestId})
 
-        response = jsonify(
-            {"status_code": 200, "dtime": str(now), "node_id": nid, "reqid": requestId})
+        else:
+            response = jsonify(
+                {"status_code": 403, "status": "Invalid Request"})
+
         return response
 
 
-api.add_resource(reqIdGen, "/getReqIdAuth/<int:nid>")
+class nodeIdGenerator(Resource):
+    def get(self, loc, mac_id):
+
+        nodeId = nidGenerator()
+
+        data = nodeList(nodeId, loc, mac_id)
+        db.session.add(data)
+        db.session.commit()
+
+        if(checkNodeCreation(nodeId, mac_id)):
+            return jsonify({"status_code": 201, "node_reg_status": "node registered successfully", "assigned_node_id": nodeId})
+        else:
+            return jsonify({"status_code": 424, "node_reg_status": "node registration failed"})
+
+
+api.add_resource(nodeIdGenerator, "/nodeCreate/<string:loc>/<string:mac_id>")
+api.add_resource(reqIdGen, "/getReqIdAuth/<int:nid>/<string:mac_id>")
 api.add_resource(listApiData, "/apiInfo")
 api.add_resource(sendWeatherData, "/getWtData/<int:nid>")
-api.add_resource(getStatus, "/getStatus")
-api.add_resource(postStatus, "/postStatus/<int:id>/<string:status>")
-api.add_resource(createNode, "/createNode/<int:id>/<string:status>")
+api.add_resource(getStatus, "/getStatus/<int:nid>")
 api.add_resource(
-    postData, "/postData/<string:rqid>/<int:id>/<string:loc>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>/<float:uvid>")
+    postStatus, "/postStatus/<int:id>/<string:status>/<string:mac_id>")
+api.add_resource(
+    postData, "/postData/<string:rqid>/<string:mac_id>/<int:id>/<string:loc>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:alti>/<float:uvid>")
 
 if __name__ == '__main__':
     app.run(debug=MODE)
