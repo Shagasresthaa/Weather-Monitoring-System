@@ -55,12 +55,14 @@ class adminAccessTable(db.Model):
     __tablename__ = "adminDashTable"
     id = db.Column(db.Integer, primary_key=True)
     nm = db.Column(db.String(100))
-    admStat = db.Column(db.Boolean)
+    uemail = db.Column(db.String(100))
+    passwd = db.Column(db.String(100))
 
-    def __init__(self, id, nm, admStat):
+    def __init__(self, id, nm, uemail, passwd):
         self.id = id
         self.nm = nm
-        self.admStat = admStat
+        self.uemail = uemail
+        self.passwd = passwd
 
 
 class requestHist(db.Model):

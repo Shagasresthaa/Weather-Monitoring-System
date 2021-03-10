@@ -27,7 +27,7 @@ source code root directory as COPYING.txt.
 #   @author Shaga Sresthaa
 #############################################
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from models import (nodeList, Stats, WeatherNodeData,
@@ -37,12 +37,14 @@ import json
 import datetime as dt
 import uuid
 from random import randint
+from flask_cors import CORS, cross_origin
 
 MODE = True
 CREATE_DB = False
 
 app = Flask(__name__)
 api = Api(app)
+cors = CORS(app)
 
 app.config.from_pyfile('config.py')
 
@@ -61,7 +63,7 @@ class postData(Resource):
                                    temp, pres, humd, alti, uvid)
             db.session.add(data)
             db.session.commit()
-            return jsonify({"status_code": "200", "action_status": "successful", "data": dt})
+            return jsonify({"status_code": 201, "action_status": "successful", "data": dt})
 
         else:
             return jsonify({"status_code": 403, "action_status": "Invalid Request"})
@@ -72,7 +74,7 @@ class postStatus(Resource):
         data = Stats(id, status, mac_id)
         db.session.add(data)
         db.session.commit()
-        return jsonify({"status_code": "200", "dev_id": id, "dev_status": status, "dev_mac_id": mac_id, "post_Status": "Successful"})
+        return jsonify({"status_code": 201, "dev_id": id, "dev_status": status, "dev_mac_id": mac_id, "post_Status": "Successful"})
 
 
 class getStatus(Resource):
@@ -88,7 +90,7 @@ class getStatus(Resource):
 
 class listApiData(Resource):
     def get(self):
-        return jsonify({"status_code": "200", "API_Version": "1.2.0", "Author": "Shaga Sresthaa", "License": "GPL v3.0"})
+        return jsonify({"status_code": "200", "API_Version": "1.3.0", "Author": "Shaga Sresthaa", "License": "GPL v3.0"})
 
 
 class sendWeatherData(Resource):
@@ -222,6 +224,19 @@ class nodeIdGenerator(Resource):
             return jsonify({"status_code": 424, "node_reg_status": "node registration failed"})
 
 
+class loginManager(Resource):
+    def get(self, mail, passwd):
+        data = db.session.query(adminAccessTable.uemail,
+                                adminAccessTable.passwd).filter_by(uemail=mail)
+
+        for lst in data:
+            if(lst.uemail == mail and lst.passwd == passwd):
+                return jsonify({"status_code": 200, "data": {"auth_status": "authenticated", "accept_login_request": True}}, 200)
+            else:
+                return jsonify({"status_code": 403, "data": {"auth_status": "not authenticated", "accept_login_request": False}}, 403)
+
+
+api.add_resource(loginManager, "/authUser/<string:mail>/<string:passwd>")
 api.add_resource(nodeIdGenerator, "/nodeCreate/<string:loc>/<string:mac_id>")
 api.add_resource(reqIdGen, "/getReqIdAuth/<int:nid>/<string:mac_id>")
 api.add_resource(listApiData, "/apiInfo")
