@@ -27,35 +27,58 @@ source code root directory as COPYING.txt.
 #   @author Shaga Sresthaa
 #############################################
 
-from flask import Flask, render_template, request
+from flask import Flask, redirect, url_for, render_template, request, session
 import requests as rq
 import json
-import datetime as dt
+from datetime import timedelta
 
 MODE = True
 
 app = Flask(__name__)
+# app.config.from_pyfile('config.py')
+app.secret_key = "dzXNPaFQAA17prfcCVZd"
+app.permanent_session_lifetime = timedelta(minutes=5)
 
 # App Routing
 
-
-@app.route('/')
-def index():
-    return render_template('index.html')
+murl = "https://weather-main17.herokuapp.com/"
+dbgurl = "http://127.0.0.1:5000/"
 
 
-@app.route('/', methods=['POST'])
-def getValue():
-    email = request.form['memail']
-    passwd = request.form['mpasswd']
-    if(checkAuth(email, passwd)):
-        return render_template('main.html')
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == "POST":
+        email = request.form['memail']
+        passwd = request.form['mpasswd']
+        if(checkAuth(email, passwd)):
+            session.permanent = True
+            session["user"] = email
+            return redirect(url_for("user"))
+
     else:
-        return render_template('index.html')
+        if "user" in session:
+            return redirect(url_for("user"))
+
+        return render_template("index.html")
+
+
+@app.route('/home')
+def user():
+    if "user" in session:
+        user = session["user"]
+        return render_template("main.html")
+    else:
+        return render_template("index.html")
+
+
+@app.route('/logout')
+def logoutUser():
+    session.pop("user", None)
+    return render_template("index.html")
 
 
 def checkAuth(mailid, mpasswd):
-    url = "http://127.0.0.1:5000/authUser/" + mailid + "/" + mpasswd
+    url = dbgurl + "authUser/" + mailid + "/" + mpasswd
     dt = rq.get(url)
     rsp = dt.json()
     return rsp[0]['data']['accept_login_request']
