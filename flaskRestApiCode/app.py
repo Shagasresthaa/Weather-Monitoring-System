@@ -40,7 +40,7 @@ from random import randint
 from flask_cors import CORS, cross_origin
 
 MODE = True
-CREATE_DB = False
+CREATE_DB = True
 
 app = Flask(__name__)
 api = Api(app)
@@ -234,6 +234,17 @@ def userIdGenerator():
         userIdGenerator()
 
 
+def checkUserPresence(name, mailid):
+    data = db.session.query(adminAccessTable.nm,
+                            adminAccessTable.uemail).filter_by(uemail=mailid)
+
+    for lst in data:
+        if(lst.nm == name or lst.uemail == mailid):
+            return False
+        else:
+            return True
+
+
 class nodeIdGenerator(Resource):
     def get(self, loc, mac_id):
 
@@ -268,13 +279,16 @@ class loginManager(Resource):
 class registerUser(Resource):
     def get(self, name, mail, passwd):
         uid = userIdGenerator()
-        data = adminAccessTable(uid, name, mail, passwd, False)
-        db.session.add(data)
-        db.session.commit()
-        if(checkUserCreation(uid, mail, passwd)):
-            return jsonify({"status_code": 201, "user_reg_status": "user registered successfully", "assigned_user_id": uid})
+        if(checkUserPresence(name, mail)):
+            data = adminAccessTable(uid, name, mail, passwd, False)
+            db.session.add(data)
+            db.session.commit()
+            if(checkUserCreation(uid, mail, passwd)):
+                return jsonify({"status_code": 201, "user_reg_status": "user registered successfully", "assigned_user_id": uid})
+            else:
+                return jsonify({"status_code": 424, "user_reg_status": "user registration failed"})
         else:
-            return jsonify({"status_code": 424, "user_reg_status": "user registration failed", "name": name})
+            return jsonify({"status_code": 403, "user_reg_status": "user with same name or email already exists"})
 
 
 api.add_resource(

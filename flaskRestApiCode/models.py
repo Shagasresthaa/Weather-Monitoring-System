@@ -52,9 +52,9 @@ class WeatherNodeData(db.Model):
 class adminAccessTable(db.Model):
     __tablename__ = "adminDashTable"
     id = db.Column(db.String(32), primary_key=True)
-    nm = db.Column(db.String(100))
-    uemail = db.Column(db.String(100))
-    passwd = db.Column(db.String(100))
+    nm = db.Column(db.String(100), unique=True)
+    uemail = db.Column(db.String(100), unique=True)
+    passwd = db.Column(db.String(100), unique=True)
     admin = db.Column(db.Boolean)
 
     def __init__(self, id, nm, uemail, passwd, admin):
