@@ -1,3 +1,3 @@
-SQLALCHEMY_DATABASE_URI = "postgresql://postgres:@5Sresthaa1@localhost/dummyWeatherDB"
+SQLALCHEMY_DATABASE_URI = "postgres://pi:@5Sresthaa1@192.168.0.117:5432/weatherdb"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 CORS_HEADERS = 'Content-Type'

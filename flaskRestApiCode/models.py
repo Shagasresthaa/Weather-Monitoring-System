@@ -36,7 +36,6 @@ class WeatherNodeData(db.Model):
     temp = db.Column(db.Float)
     pres = db.Column(db.Float)
     humd = db.Column(db.Float)
-    alti = db.Column(db.Float)
     uvid = db.Column(db.Float)
 
     def __init__(self, rqid, id, loc, dtime, temp, pres, humd, alti, uvid):
@@ -47,22 +46,23 @@ class WeatherNodeData(db.Model):
         self.temp = temp
         self.pres = pres
         self.humd = humd
-        self.alti = alti
         self.uvid = uvid
 
 
 class adminAccessTable(db.Model):
     __tablename__ = "adminDashTable"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     nm = db.Column(db.String(100))
     uemail = db.Column(db.String(100))
     passwd = db.Column(db.String(100))
+    admin = db.Column(db.Boolean)
 
-    def __init__(self, id, nm, uemail, passwd):
+    def __init__(self, id, nm, uemail, passwd, admin):
         self.id = id
         self.nm = nm
         self.uemail = uemail
         self.passwd = passwd
+        self.admin = admin
 
 
 class requestHist(db.Model):
