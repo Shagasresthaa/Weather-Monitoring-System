@@ -40,7 +40,7 @@ from random import randint
 from flask_cors import CORS, cross_origin
 
 MODE = True
-CREATE_DB = True
+CREATE_DB = False
 
 app = Flask(__name__)
 api = Api(app)
