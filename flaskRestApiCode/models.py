@@ -54,7 +54,7 @@ class adminAccessTable(db.Model):
     id = db.Column(db.String(32), primary_key=True)
     nm = db.Column(db.String(100), unique=True)
     uemail = db.Column(db.String(100), unique=True)
-    passwd = db.Column(db.String(100), unique=True)
+    passwd = db.Column(db.String(100))
     admin = db.Column(db.Boolean)
 
     def __init__(self, id, nm, uemail, passwd, admin):
