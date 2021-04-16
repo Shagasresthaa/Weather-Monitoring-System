@@ -77,6 +77,25 @@ def logoutUser():
     return render_template("index.html")
 
 
+@app.route('/register')
+def registerUser():
+    if request.method == "POST":
+        name = request.form['name']
+        email = request.form['memail']
+        passwd = request.form['mpasswd']
+        cpasswd = request.form['cmpasswd']
+        if(checkAuth(email, passwd)):
+            session.permanent = True
+            session["user"] = email
+            return redirect(url_for("user"))
+
+    else:
+        if "user" in session:
+            return redirect(url_for("user"))
+
+        return render_template("register.html")
+
+
 def checkAuth(mailid, mpasswd):
     url = dbgurl + "authUser/" + mailid + "/" + mpasswd
     dt = rq.get(url)

@@ -1,5 +1,3 @@
-var authStatus = "";
-
 function myFunction() {
     var x = document.getElementById("passwd");
     if (x.type === "password") {

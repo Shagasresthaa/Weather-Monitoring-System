@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Admin Login</title>
+    <title>User Registration</title>
 
-    <link rel="stylesheet" type="text/css" href="/static/css/index.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/register.css">
 
     <!-- Font CDN's -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -19,13 +19,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="/static/scripts/index.js"></script>
+    <script type="text/javascript" src="/static/scripts/register.js"></script>
 
 </head>
 <body>
     <div class="container-fluid">
-        <center><h1>Administrator/User Login</h1></center>
+        <center><h1>User Registration</h1></center>
         <form name="login_form" action="." method="POST">
+            <div class="form-group">
+              <label for="exampleInputEmail1">Name</label>
+              <input type="text" name="name" class="form-control" id="username" placeholder="Enter email">
+            </div>
             <div class="form-group">
               <label for="exampleInputEmail1">Email address</label>
               <input type="email" name="memail" class="form-control" id="emailAddr" aria-describedby="emailHelp" placeholder="Enter email">
@@ -33,10 +37,15 @@
             <div class="form-group">
               <label for="exampleInputPassword1">Password</label>
               <input type="password" name="mpasswd" class="form-control" id="passwd" placeholder="Password">
-              <input type="checkbox" onclick="myFunction()"> Show Password
+              <input type="checkbox" onclick="myFunction1()"> Show Password
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-            <a class="btn btn-secondary lgbtn" href="{{url_for("registerUser")}}">Register</a>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Confirm Password</label>
+              <input type="password" name="cmpasswd" class="form-control" id="cmpasswd" placeholder="Confirm Password">
+              <input type="checkbox" onclick="myFunction2()"> Show Password
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+            <a class="btn btn-secondary lgbtn" href="{{url_for("login")}}">Login</a>
           </form>
     </div>
 </body>
