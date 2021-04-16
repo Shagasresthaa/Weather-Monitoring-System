@@ -15,8 +15,5 @@ The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
 
 
-For using this project use either Weather Node V4 or Weather Node V4 (SMD Edition) Gerber files and Schematics
-
-The V4 is so far the final hardware going to be used and will include only minor changes if needed in case of bugs or other requirements
-
-If anyone finds any issue or anything that can be done better in schematic or PCB design do raise an issue
+Final design is based on ESP32 and many chnages in modules have been done. 
+New Schematics are to be uploaded soon
