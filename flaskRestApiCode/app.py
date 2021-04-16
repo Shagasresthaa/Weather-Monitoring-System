@@ -58,11 +58,14 @@ if(CREATE_DB):
 class postData(Resource):
     def get(self, rqid, mac_id, id, loc, dtime, temp, pres, humd, uvid):
         isValidRequest = checkReq(rqid, mac_id, id)
+        tm = str(dtime)
+        datetimeSplit = tm.split("+")
+        findtime = datetimeSplit[0] + " " + datetimeSplit[1]
         if(isValidRequest):
-            data = WeatherNodeData(rqid, id, loc, dtime,
+            data = WeatherNodeData(rqid, id, loc, findtime,
                                    temp, pres, humd, uvid)
-            dt = {'request_id': rqid, 'mac_id': mac_id, 'node_id': id, 'location': loc, 'date_and_time': str(
-                dtime), 'recorded_temperature': temp, 'recorded_presure': pres, 'recorded_humidity': humd, 'recorded_uv_index': uvid}
+            dt = {'request_id': rqid, 'mac_id': mac_id, 'node_id': id, 'location': loc, 'date_and_time': findtime,
+                  'recorded_temperature': temp, 'recorded_presure': pres, 'recorded_humidity': humd, 'recorded_uv_index': uvid}
             db.session.add(data)
             db.session.commit()
             return jsonify({"status_code": 201, "action_status": "successful", "data": dt})
@@ -234,15 +237,14 @@ def userIdGenerator():
         userIdGenerator()
 
 
-def checkUserPresence(name, mailid):
-    data = db.session.query(adminAccessTable.nm,
-                            adminAccessTable.uemail).filter_by(uemail=mailid)
+def checkUserPresence(mailid):
+    data = db.session.query(adminAccessTable.uemail).filter_by(
+        uemail=mailid).count()
 
-    for lst in data:
-        if(lst.nm == name or lst.uemail == mailid):
-            return False
-        else:
-            return True
+    if(data > 0):
+        return True
+    else:
+        return False
 
 
 class nodeIdGenerator(Resource):
@@ -279,7 +281,7 @@ class loginManager(Resource):
 class registerUser(Resource):
     def get(self, name, mail, passwd):
         uid = userIdGenerator()
-        if(checkUserPresence(name, mail)):
+        if(not checkUserPresence(mail)):
             data = adminAccessTable(uid, name, mail, passwd, False)
             db.session.add(data)
             db.session.commit()
@@ -288,7 +290,7 @@ class registerUser(Resource):
             else:
                 return jsonify({"status_code": 424, "user_reg_status": "user registration failed"})
         else:
-            return jsonify({"status_code": 403, "user_reg_status": "user with same name or email already exists"})
+            return jsonify({"status_code": 403, "user_reg_status": "user with same email already exists"})
 
 
 api.add_resource(
