@@ -1,3 +1,5 @@
-nodeId = "**********"
-macId = "*********"
-loc = "**********"
+nodeId = ""
+macId = ""
+loc = ""
+wlanId = ""
+wlanPass = ""

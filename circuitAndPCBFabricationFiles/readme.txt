@@ -14,6 +14,4 @@ The PCB Schematics and Gerber Files are licensed under GPL V3
 The full text of the GNU General Public License version 3 can be found in the
 source code root directory as COPYING.txt.
 
-
-Final design is based on ESP32 and many chnages in modules have been done. 
-New Schematics are to be uploaded soon
+This folder contains the schematics used and the gerber files for the IoT Node

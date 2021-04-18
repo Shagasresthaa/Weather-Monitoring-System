@@ -1,6 +1,7 @@
-from machine import Pin, SoftI2C, ADC
+from machine import Pin, SoftI2C, ADC, SPI
 from ds3231_port import DS3231
 import urequests as requests
+import sdcard, os
 import nodeConf
 import network
 import ssd1306
@@ -12,15 +13,27 @@ import ujson
 node_id = nodeConf.nodeId
 mac_id = nodeConf.macId
 loct = nodeConf.loc
+wlan = nodeConf.wlanId
+wlanpass = nodeConf.wlanPass
 
 sta_if = network.WLAN(network.STA_IF)
 if not sta_if.isconnected():
     print('connecting to network...')
     sta_if.active(True)
-    sta_if.connect('dlink-DIR-819', '5sresthaa1')
+    sta_if.connect(wlan, wlanpass)
     while not sta_if.isconnected():
         pass
 print('network config:', sta_if.ifconfig())
+
+#SD Card Init
+spi = SPI(sck=Pin(18),miso=Pin(19),mosi=Pin(23))
+spi.init()
+sd = sdcard.SDCard(spi, Pin(2))
+vfs = os.VfsFat(sd)
+os.mount(vfs, "/fc")
+print("Filesystem check")
+print(os.listdir("/fc"))
+
 
 #oled init
 i2c = SoftI2C(scl=Pin(22),sda=Pin(21))
@@ -40,13 +53,24 @@ def mapfloat(x, in_min, in_max, out_min, out_max):
 
 #DS3131 init
 ds3231 = DS3231(i2c)
-ds3231.save_time()
+#ds3231.save_time()
 
 #ML8511 init
 uvLevel = ADC(Pin(34))
 refLevel = ADC(Pin(35))
 uvLevel.atten(ADC.ATTN_11DB)
 refLevel.atten(ADC.ATTN_11DB)
+
+def writeDataToSDCard(data):
+    logPath = "/fc/dataCollected.log"
+    dataPath = "/fc/datalog.csv"
+
+    with open(logPath,'a') as file1:
+        file1.write(data)
+        file1.close()
+    with open(dataPath,'a') as file2:
+        file2.write(data)
+        file2.close()
 
 def getRequestIdAuth():
     requrl = "https://weather-main17.herokuapp.com/getReqIdAuth/" + node_id + "/" + mac_id
@@ -71,15 +95,6 @@ def sendDataToApi(wdata):
         print("retrying")
         sendDataToApi(data)
 
-def testConnection(wdata):
-    url = "https://weather-main17.herokuapp.com/postData/fa87191d85b44553ac7847d639337671/" + mac_id + "/" + node_id + "/" + loct + "/" + wdata
-    furl = str(url)
-    res = requests.get(furl)
-    respdata = ujson.dumps(res.json())
-    fin = ujson.loads(respdata)
-    print(fin)
-    print(fin["status_code"])
-
 while True:
     try:
         sensor.measure()
@@ -103,9 +118,10 @@ while True:
     cDate = str(Y) + "-" + str(Mon) + "-" + str(D)
     cTime = str(Hr) + ":" + str(M) + ":" + str(S)
     timeStamp = cDate + "+" + cTime
-    
-    data = timeStamp + "/" + str(temp) + "/" + str(bmp.pressure/101325) + "/" + str(hum) + "/" + str(abs(round(uvIntensity,2)))
-    sendDataToApi(data)
+    ts1 = cDate + " " + cTime
+    print(ts1)
+    data = ts1 + "/" + str(temp) + "/" + str(bmp.pressure/101325) + "/" + str(hum) + "/" + str(abs(round(uvIntensity,2))) + "\n"
+    dt1 = timeStamp + "/" + str(temp) + "/" + str(bmp.pressure/101325) + "/" + str(hum) + "/" + str(abs(round(uvIntensity,2)))
     
     oled.fill(0)
     oled.text(cDate,30,0)
@@ -115,4 +131,7 @@ while True:
     oled.text(P,0,40)
     oled.text(uvin,0,50)
     oled.show()
+    
+    writeDataToSDCard(data)
+    sendDataToApi(dt1)
     time.sleep(30)
