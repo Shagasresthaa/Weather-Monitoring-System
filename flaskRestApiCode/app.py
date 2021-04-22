@@ -39,7 +39,7 @@ import uuid
 from random import randint
 from flask_cors import CORS, cross_origin
 
-MODE = True
+MODE = False
 CREATE_DB = False
 
 app = Flask(__name__)
@@ -101,12 +101,12 @@ class listApiData(Resource):
 class sendWeatherData(Resource):
     def get(self, nid):
         data = db.session.query(
-            WeatherNodeData.id, WeatherNodeData.loc, WeatherNodeData.dtime, WeatherNodeData.temp, WeatherNodeData.pres, WeatherNodeData.humd, WeatherNodeData.alti, WeatherNodeData.uvid).filter_by(id=nid)
+            WeatherNodeData.id, WeatherNodeData.loc, WeatherNodeData.dtime, WeatherNodeData.temp, WeatherNodeData.pres, WeatherNodeData.humd, WeatherNodeData.uvid).filter_by(id=nid).order_by(WeatherNodeData.dtime)
         list1 = []
         for lst in data:
 
             txt = {'id': str(lst.id), 'date_time': str(lst.dtime), 'location': str(lst.loc), 'temp': str(
-                lst.temp), 'pres': str(lst.pres), 'humd': str(lst.humd), 'alti': str(lst.alti), 'uvindex': str(lst.uvid)}
+                lst.temp), 'pres': str(lst.pres), 'humd': str(lst.humd), 'uvindex': str(lst.uvid)}
 
             list1.append(txt)
 
@@ -204,8 +204,7 @@ def checkUserCreation(usid, usemail, uspasswd):
         if(lst.id == usid and lst.uemail == usemail and lst.passwd == uspasswd):
             return True
 
-        else:
-            return False
+    return False
 
 
 class reqIdGen(Resource):
@@ -237,14 +236,15 @@ def userIdGenerator():
         userIdGenerator()
 
 
-def checkUserPresence(mailid):
-    data = db.session.query(adminAccessTable.uemail).filter_by(
+def checkUserPresence(unames, mailid):
+    mailcount = db.session.query(adminAccessTable.uemail).filter_by(
         uemail=mailid).count()
-
-    if(data > 0):
-        return True
-    else:
+    namecount = db.session.query(adminAccessTable.uemail).filter_by(
+        nm=unames).count()
+    if(mailcount > 0 or namecount > 0):
         return False
+    else:
+        return True
 
 
 class nodeIdGenerator(Resource):
@@ -281,7 +281,7 @@ class loginManager(Resource):
 class registerUser(Resource):
     def get(self, name, mail, passwd):
         uid = userIdGenerator()
-        if(not checkUserPresence(mail)):
+        if(checkUserPresence(name, mail)):
             data = adminAccessTable(uid, name, mail, passwd, False)
             db.session.add(data)
             db.session.commit()
@@ -290,9 +290,22 @@ class registerUser(Resource):
             else:
                 return jsonify({"status_code": 424, "user_reg_status": "user registration failed"})
         else:
-            return jsonify({"status_code": 403, "user_reg_status": "user with same email already exists"})
+            return jsonify({"status_code": 403, "user_reg_status": "user with same name or email already exists"})
 
 
+class listAllNodes(Resource):
+    def get(self):
+        nodedata = db.session.query(nodeList).all()
+        nodecount = db.session.query(nodeList.id).count()
+        nodes = []
+
+        for lst in nodedata:
+            nodes.append(str(lst.id))
+
+        return jsonify({"status_code": 201, "nodes": nodes, "total_nodes": str(nodecount)})
+
+
+api.add_resource(listAllNodes, "/getNodes")
 api.add_resource(
     registerUser, "/regUser/<string:name>/<string:mail>/<string:passwd>")
 api.add_resource(loginManager, "/authUser/<string:mail>/<string:passwd>")
@@ -307,4 +320,4 @@ api.add_resource(
     postData, "/postData/<string:rqid>/<string:mac_id>/<int:id>/<string:loc>/<string:dtime>/<float:temp>/<float:pres>/<float:humd>/<float:uvid>")
 
 if __name__ == '__main__':
-    app.run(debug=MODE)
+    app.run(debug=MODE, threaded=True)

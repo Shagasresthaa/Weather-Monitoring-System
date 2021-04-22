@@ -1,3 +1,9 @@
 .lgbtn{
     margin-left: 3vw;
 }
+
+.messageret{
+    font-size: 1rem;
+    color: red;
+    text-decoration: none;
+}

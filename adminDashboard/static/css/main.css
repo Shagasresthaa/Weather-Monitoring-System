@@ -1,0 +1,9 @@
+.card-deck{
+    text-align: center;
+    margin: 5vh;
+}
+
+.dropdown-menu > a:hover {
+    border-radius: 5px;
+    background-color: #1395f1;
+}
