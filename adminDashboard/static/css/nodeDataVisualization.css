@@ -1,0 +1,14 @@
+
+.dropdown-menu > a:hover {
+    border-radius: 5px;
+    background-color: #1395f1;
+}
+
+.dpdn{
+    margin: 10px;
+}
+
+.chart{
+    max-width: 100%;
+    margin-top: 20px;
+}
